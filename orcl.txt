@@ -1,0 +1,54 @@
+set SERVEROUT on;
+EXECUT CREATE_USER('Usman','M','0','Create','')
+
+set SERVEROUT on;
+exec APPROVED(2,2,'UPDATE','Reject')
+
+select * from users
+
+create or replace PROCEDURE APPROVED
+(
+PUSER_ID NUMBER,
+PSTATUS NUMBER,
+PLAST_ACTION VARCHAR2,
+PREMARKS VARCHAR2
+)
+AS
+BEGIN 
+    IF PSTATUS = 1 --APPROVED
+    THEN
+        IF (PLAST_ACTION = 'CREATE') THEN
+        UPDATE USERS 
+        SET STATUS = PSTATUS,
+            REMARKS = PREMARKS,
+            UDATED_BY = '',
+            UPDATE_DATE = ''
+            WHERE USER_ID = PUSER_ID;   
+        ELSIF (PLAST_ACTION = 'UPDATE') THEN
+        UPDATE USERS 
+        SET STATUS = PSTATUS,
+            REMARKS = PREMARKS,
+            UDATED_BY = USER,
+            UPDATE_DATE = SYSDATE
+            WHERE USER_ID = PUSER_ID;
+        END IF;  
+    ELSIF (PSTATUS = 2) --REJECT
+    THEN
+        IF (PLAST_ACTION = 'CREATE') THEN
+        UPDATE USERS 
+        SET STATUS = PSTATUS,
+            REMARKS = PREMARKS,
+            UDATED_BY = '',
+            UPDATE_DATE = ''
+            WHERE USER_ID = PUSER_ID;     
+        ELSIF 
+             (PLAST_ACTION = 'UPDATE') THEN
+        UPDATE USERS 
+        SET STATUS = PSTATUS,
+            REMARKS = PREMARKS,
+            UDATED_BY =  USER,
+            UPDATE_DATE = SYSDATE
+            WHERE USER_ID = PUSER_ID;
+        END IF;  
+    END IF;
+END APPROVED;
